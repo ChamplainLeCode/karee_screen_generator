@@ -1,6 +1,6 @@
 name: screengen
 description: Screen generator, this project is used by Karee Core, to generate additional files for Screen.
-version: 1.0.0
+version: 1.0.1
 homepage: https://github.com/ChamplainLeCode/karee_screen_generator.git
 environment:
   sdk: ">=2.0.0 <3.0.0"

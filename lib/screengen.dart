@@ -3,5 +3,5 @@
 
 library karee.screen.generator;
 
-export 'src/builder.dart';
+export 'builder.dart';
 export 'src/screen_generator.dart';
