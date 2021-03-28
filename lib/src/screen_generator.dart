@@ -1,10 +1,9 @@
 library karee.screen.generator;
 
 import 'dart:io';
-import 'package:analyzer/dart/element/element.dart';
 import 'package:build/build.dart';
 import 'package:source_gen/source_gen.dart';
-import 'package:screen_tracker/screen_tracker.dart';
+import 'package:screen_tracker/screen_tracker.dart' show Screen;
 
 ///
 /// @Author Champlain Marius Bakop
@@ -16,20 +15,28 @@ import 'package:screen_tracker/screen_tracker.dart';
 class ScreenGenerator extends GeneratorForAnnotation<Screen> {
   @override
   dynamic generateForAnnotatedElement(
-      Element element, ConstantReader annotation, BuildStep buildStep) {
+      var element, ConstantReader annotation, BuildStep buildStep) {
     String source = element.metadata[0].toSource();
-    String sh = element.source.shortName, ex = buildStep.inputId.extension;
+    var sourceElement = element.source;
+    if(sourceElement != null){
 
-    var annotation = element.metadata.first.constantValue;
+      String sh = sourceElement.shortName, ex = buildStep.inputId.extension;
 
-    generatedScreens.putIfAbsent(
-        source.substring(source.indexOf("'") + 1, source.lastIndexOf("'")),
-        () => {
-              #uri: element.source.uri.toString(),
-              #className: "${underscoreToCambel(sh.replaceAll(ex, ''))}()",
-              #initial: annotation.getField('isInitial')?.toBoolValue()
-            });
-    writeMap();
+      print("\n\n########################META FIRST\n\n####################");
+      var annotation = element.metadata.first.computeConstantValue();
+
+      print(source);
+      print("\n\n########################\n#${annotation?.getField('name')??'No_name'}\n################");
+      generatedScreens.putIfAbsent(
+          annotation?.getField('name')?.toStringValue() ?? 'NO_NAME',
+          // source.substring(source.indexOf("'") + 1, source.lastIndexOf("'")),
+          () => {
+                #uri: sourceElement.uri.toString(),
+                #className: "${underscoreToCambel(sh.replaceAll(ex, ''))}()",
+                #initial: annotation?.getField('isInitial')?.toBoolValue() ?? false
+              });
+      writeMap();
+    }
   }
 
   String cambelToUnderscore([String name = '']) {
@@ -62,7 +69,7 @@ class ScreenGenerator extends GeneratorForAnnotation<Screen> {
   }
 
   bool isUpper([String char = '']) {
-    if (char == null || char.isEmpty) return false;
+    if (char.isEmpty) return false;
     return char.codeUnitAt(0) >= 65 && char.codeUnitAt(0) <= 90;
   }
 }
